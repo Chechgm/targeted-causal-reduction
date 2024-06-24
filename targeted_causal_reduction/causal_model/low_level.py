@@ -13,7 +13,7 @@ class LowLevelCausalModel(ABC, nn.Module):
     Attributes
     ----------
     n_vars : int
-        The number of variables in the causal model, excluding the target variable.
+        The number of variables in the causal model.
     intervention_mask : np.ndarray
         The mask for the intervention. It is a binary mask of shape (1, n_vars). If the mask is 0, the variable is
         not intervened upon; if the mask is 1, the variable is intervened upon.
@@ -21,14 +21,14 @@ class LowLevelCausalModel(ABC, nn.Module):
 
     def __init__(
         self,
-        n_vars: int,  # excluding target variable
+        n_vars: int,
         intervention_mask: Optional[np.ndarray] = None,
     ) -> None:
         """
         Parameters
         ----------
         n_vars: int
-            The number of variables in the causal model, excluding the target variable.
+            The number of variables in the causal model.
         intervention_mask: Optional[np.ndarray]
             The mask for the intervention. If None, all non-target variables are intervened upon.
         """
@@ -39,7 +39,7 @@ class LowLevelCausalModel(ABC, nn.Module):
     @abstractmethod
     def sample(
         self, intervention: np.ndarray, batch_size: int, **kwargs: dict
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Sample from the causal model.
 
@@ -54,9 +54,8 @@ class LowLevelCausalModel(ABC, nn.Module):
 
         Returns
         -------
-        tuple[np.ndarray, np.ndarray, np.ndarray]
-            The features X, the intervention I and the target Y. The shape of X and I is (1, batch_size, n_vars);
-            the shape of Y is (1, batch_size, 1).
+        tuple[np.ndarray, np.ndarray]
+            The features X and the intervention I. The shape of X and I is (1, batch_size, n_vars).
         """
         raise NotImplementedError
 
