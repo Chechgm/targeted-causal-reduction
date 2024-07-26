@@ -3,13 +3,13 @@ from typing import Optional
 import torch
 from torch import nn
 
-from .reduction_map import LinearReductionMap
+from .reduction_map import LinearCausalAbstraction
 from ..causal_model import LowLevelCausalModel, HighLevelCausalModel
 
 
-class Reduction(nn.Module):
+class CausalAbstraction(nn.Module):
     """
-    A reduction learns a mapping from a low-level causal model to a high-level causal model.
+    A causal abstraction learns a mapping from a low-level causal model to a high-level causal model.
 
     Attributes
     ----------
@@ -17,15 +17,15 @@ class Reduction(nn.Module):
         Low-level causal model.
     high_level : HighLevelCausalModel
         High-level causal model.
-    tau_map_ground_truth : Optional[LinearReductionMap]
+    tau_map_ground_truth : Optional[LinearCausalAbstraction]
         Ground truth mapping from low-level to high-level variables. This only exists for synthetic linear
         low-level causal models.
-    omega_map_ground_truth : Optional[LinearReductionMap]
+    omega_map_ground_truth : Optional[LinearCausalAbstraction]
         Ground truth mapping from low-level to high-level interventions. This only exists for synthetic linear
         low-level causal models.
-    tau_map : LinearReductionMap
+    tau_map : LinearCausalAbstractionMap
         Mapping from low-level to high-level variables.
-    omega_map : LinearReductionMap
+    omega_map : LinearCausalAbstractionMap
         Mapping from low-level to high-level interventions.
     """
 
@@ -33,8 +33,8 @@ class Reduction(nn.Module):
         self,
         low_level: LowLevelCausalModel,
         high_level: HighLevelCausalModel,
-        tau_map_ground_truth: Optional[LinearReductionMap] = None,
-        omega_map_ground_truth: Optional[LinearReductionMap] = None,
+        tau_map_ground_truth: Optional[LinearCausalAbstraction] = None,
+        omega_map_ground_truth: Optional[LinearCausalAbstraction] = None,
     ):
         super().__init__()
         self.low_level = low_level
@@ -42,8 +42,8 @@ class Reduction(nn.Module):
         self.tau_map_ground_truth = tau_map_ground_truth
         self.omega_map_ground_truth = omega_map_ground_truth
 
-        self.omega_map = LinearReductionMap(low_level.n_vars, high_level.n_vars)
-        self.tau_map = LinearReductionMap(low_level.n_vars, high_level.n_vars)
+        self.omega_map = LinearCausalAbstraction(low_level.n_vars, high_level.n_vars)
+        self.tau_map = LinearCausalAbstraction(low_level.n_vars, high_level.n_vars)
 
     def forward(
         self, x: torch.Tensor, s: torch.Tensor

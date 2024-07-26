@@ -2,10 +2,10 @@ import torch
 from torch import nn
 
 
-class LinearReductionMap(nn.Module):
+class LinearCausalAbstraction(nn.Module):
 
     """
-    A linear reduction map takes either (a) the variables or (b) the interventions of a low-level causal model and
+    A linear causal abstraction takes either (a) the variables or (b) the interventions of a low-level causal model and
     returns the corresponding variables or interventions of a high-level causal model. It is a linear map that
     aggregates the low-level variables or interventions into the high-level variables or interventions.
 
