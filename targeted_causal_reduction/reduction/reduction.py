@@ -49,7 +49,7 @@ class CausalAbstraction(nn.Module):
         self, x: torch.Tensor, s: torch.Tensor
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
-        Forward pass of the reduction. It maps low-level variables `x` and interventions 's' to high-level causes 'z'
+        Forward pass of the reduction. It maps low-level variables `x` and interventions 's' to high-level causes 'z_hat'
         and interventions `r`, respectively, and then applies the high-level causal mechanism to predict the target.
 
         Parameters
@@ -61,24 +61,20 @@ class CausalAbstraction(nn.Module):
 
         Returns
         -------
-        z: torch.Tensor
+        z_hat: torch.Tensor
             High-level causes. Shape (batch_size, batch_size_sim, self.high_level.n_vars).
         r: torch.Tensor
             High-level interventions. Shape (batch_size, batch_size_sim, self.high_level.n_vars).
-        y_hat: torch.Tensor
-            Predicted target. Shape (batch_size, batch_size_sim, 1).
         """
         shape = (
             *x.shape[:-1],
             self.high_level.n_vars,
         )  # (batch_size, batch_size_sim, n_vars_high_level)
-        z = torch.zeros(shape, device=x.device)  # abstract variables
+        z_hat = torch.zeros(shape, device=x.device)  # abstract variables
         r = torch.zeros_like(z)  # abstract interventions
 
         for i in range(self.high_level.n_vars):
-            z[..., i] = self.tau_map(x, idx=i).squeeze(-1)
+            z_hat[..., i] = self.tau_map(x, idx=i).squeeze(-1)
             r[..., i] = self.omega_map(s, idx=i).squeeze(-1)
 
-        y_hat = self.high_level.causal_mechanism(z)
-
-        return z, r, y_hat
+        return z_hat, r
